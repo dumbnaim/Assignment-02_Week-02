@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from datetime import date
+
+# Data
+data = {'M': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        'N': [30, 25, 95, 115, 265, 325, 570, 700, 1085, 1300]}
+df = pd.DataFrame(data)
+
+# Linear regression
+m = df['M'].values.reshape(-1,1)
+n = df['N'].values.reshape(-1,1)
+o = np.hstack([m, np.ones_like(m)])
+i, a = np.linalg.lstsq(o, n, rcond=None)[0]
+r = np.corrcoef(df['M'], df['N'])[0, 1]
+
+print(f"b1 (slope): {i[0]}")
+print(f"b0 (intercept): {a[0]}")
+print(f"Coefficient of linear correlation (r): {r}")
+
+# Plotting the data
+plt.figure(figsize=(10, 6))
+plt.scatter(df['M'], df['N'], color='red', label='Data points')
+# Plotting the linear fit
+plt.plot(df['M'], a + i * df['M'], label=f'Linear Fit; y = {a[0]:.2f} + {i[0]:.2f}x, r = {r:.2f}')
+
+# Try polynomial fit
+p = np.polyfit(df['M'], df['N'], 2) # change 2 to higher order for higher polynomial fit
+poly = np.poly1d(p)
+new_m = np.linspace(df['M'].min(), df['M'].max(), 100)
+new_n = poly(new_m)
+
+plt.plot(new_m, new_n, label='Polynomial Fit', color='green')
+
+plt.title('Data points and Fitting Models')
+plt.xlabel('M')
+plt.ylabel('N')
+plt.legend()
+plt.show()
+
+today = date.today()
+print("Today's date:", today)
